@@ -1,12 +1,31 @@
-# Project-1-
+# Senior Fall Detection & Posture Monitor
 
-Mobile Computer Vision for Fall Detection and Activity Monitoring in Seniors
+Mobile / Desktop Computer Vision system for real-time fall risk and posture monitoring of seniors using MediaPipe Pose Estimation.
 
-Author: Bryant Kha
+**Author:** Bryant Kha
 
-Falls are a leading cause of injury, loss of independence, and mortality among older adults, with roughly one in four people aged 65+ falling each year in the U.S. and 
-related medical costs in the tens of billions of dollars. Computer vision running on ordinary mobile devices (smartphones and tablets) offers a practical, low-cost way 
-to monitor seniors’ daily activities and detect falls in real time, helping them age in place safely rather than move into institutional care. Modern approaches combine 
-on-device cameras with lightweight deep-learning models (pose estimation such as MediaPipe or YOLO variants, followed by classification of postures or sudden changes) 
-that can run locally for privacy and low latency, trigger alerts to caregivers, and even assess gait or activity patterns that signal rising fall risk—without requiring 
-specialized wearable sensors or full smart-home installations.
+## Features
+- Live camera feed with body landmark detection
+- Color-coded and labeled skeleton (Spine, Head, Arms, Legs)
+- Real-time spine angle calculation
+- Automatic alarm when posture is unsafe (sitting/standing thresholds)
+- Alarm auto-stops after 5 seconds of good posture or manual stop
+- Alarm Clock mode with timer
+- Works on ordinary webcams / mobile cameras
+
+## Requirements
+- Python 3.8+
+- Webcam
+
+## Installation
+
+```bash
+git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+cd YOUR_REPO_NAME
+python -m venv venv
+# Windows
+venv\Scripts\activate
+# macOS/Linux
+source venv/bin/activate
+
+pip install -r requirements.txt
