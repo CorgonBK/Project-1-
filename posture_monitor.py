@@ -4,14 +4,24 @@ import numpy as np
 import pygame
 import time
 import math
+import sys
 import os
 
 # ==================== CONFIG ====================
-ALARM_MP3 = "alarm.mp3"          # Change this path if needed
 CAMERA_INDEX = 0                 # Default camera (change with 'c' key)
 STANDING_MIN, STANDING_MAX = 85, 95
 SITTING_MIN, SITTING_MAX = 75, 105
 GOOD_POSTURE_SECONDS = 5.0       # Must stay OK for this long to auto-stop alarm
+def resource_path(relative_path):
+    """Get absolute path to resource, works for dev and for PyInstaller"""
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+ALARM_MP3 = resource_path("alarm.mp3")
 
 # ==================== INIT ====================
 pygame.mixer.init()
