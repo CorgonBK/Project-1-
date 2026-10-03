@@ -1,5 +1,7 @@
 import cv2
 import mediapipe as mp
+from mediapipe.tasks import python
+from mediapipe.tasks.python import vision
 import numpy as np
 import pygame
 import time
@@ -8,30 +10,35 @@ import sys
 import os
 
 # ==================== CONFIG ====================
-CAMERA_INDEX = 0                 # Default camera (change with 'c' key)
+CAMERA_INDEX = 0
 STANDING_MIN, STANDING_MAX = 85, 95
 SITTING_MIN, SITTING_MAX = 75, 105
-GOOD_POSTURE_SECONDS = 5.0       # Must stay OK for this long to auto-stop alarm
+GOOD_POSTURE_SECONDS = 5.0
+
 def resource_path(relative_path):
-    """Get absolute path to resource, works for dev and for PyInstaller"""
     try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
 ALARM_MP3 = resource_path("alarm.mp3")
+MODEL_PATH = resource_path("pose_landmarker.task")
 
 # ==================== INIT ====================
 pygame.mixer.init()
-mp_pose = mp.solutions.pose
-pose = mp_pose.Pose(
-    min_detection_confidence=0.6,
-    min_tracking_confidence=0.6,
-    model_complexity=1
+
+# Create Pose Landmarker
+base_options = python.BaseOptions(model_asset_path=MODEL_PATH)
+options = vision.PoseLandmarkerOptions(
+    base_options=base_options,
+    output_segmentation_masks=False,
+    num_poses=1,
+    min_pose_detection_confidence=0.5,
+    min_pose_presence_confidence=0.5,
+    min_tracking_confidence=0.5
 )
-mp_drawing = mp.solutions.drawing_utils
+landmarker = vision.PoseLandmarker.create_from_options(options)
 
 cap = cv2.VideoCapture(CAMERA_INDEX)
 if not cap.isOpened():
@@ -39,7 +46,7 @@ if not cap.isOpened():
     exit()
 
 # State
-mode = "posture"                 # "posture" or "alarm_clock"
+mode = "posture"
 is_alarming = False
 good_posture_start = None
 timer_seconds = 0
@@ -51,7 +58,7 @@ def play_alarm():
     if not alarm_playing and os.path.exists(ALARM_MP3):
         try:
             pygame.mixer.music.load(ALARM_MP3)
-            pygame.mixer.music.play(-1)  # loop forever
+            pygame.mixer.music.play(-1)
             alarm_playing = True
             print(">>> ALARM STARTED")
         except Exception as e:
@@ -66,28 +73,28 @@ def stop_alarm():
     is_alarming = False
     good_posture_start = None
 
-def get_landmark_point(landmarks, landmark_id, w, h):
-    lm = landmarks[landmark_id]
+def get_landmark_point(landmarks, index, w, h):
+    lm = landmarks[index]
     return int(lm.x * w), int(lm.y * h)
 
 def calculate_spine_angle(landmarks, w, h):
-    """Returns angle from horizontal (90° = perfectly vertical upright)."""
-    ls = get_landmark_point(landmarks, mp_pose.PoseLandmark.LEFT_SHOULDER, w, h)
-    rs = get_landmark_point(landmarks, mp_pose.PoseLandmark.RIGHT_SHOULDER, w, h)
-    lh = get_landmark_point(landmarks, mp_pose.PoseLandmark.LEFT_HIP, w, h)
-    rh = get_landmark_point(landmarks, mp_pose.PoseLandmark.RIGHT_HIP, w, h)
+    # MediaPipe Pose landmarks:
+    # 11 = left shoulder, 12 = right shoulder
+    # 23 = left hip, 24 = right hip
+    ls = get_landmark_point(landmarks, 11, w, h)
+    rs = get_landmark_point(landmarks, 12, w, h)
+    lh = get_landmark_point(landmarks, 23, w, h)
+    rh = get_landmark_point(landmarks, 24, w, h)
 
     mid_shoulder = ((ls[0] + rs[0]) // 2, (ls[1] + rs[1]) // 2)
     mid_hip = ((lh[0] + rh[0]) // 2, (lh[1] + rh[1]) // 2)
 
     dx = mid_shoulder[0] - mid_hip[0]
-    dy = mid_shoulder[1] - mid_hip[1]   # y increases downward in image
+    dy = mid_shoulder[1] - mid_hip[1]
 
-    # atan2(dy, dx) → normalize so 90° means upright (pointing up)
     angle = math.degrees(math.atan2(dy, dx))
     if angle < 0:
         angle += 180
-    # Because person faces camera, upright spine is near 90°
     return angle, mid_hip, mid_shoulder
 
 def draw_labeled_line(frame, p1, p2, color, label, thickness=3):
@@ -97,16 +104,14 @@ def draw_labeled_line(frame, p1, p2, color, label, thickness=3):
                 cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2)
 
 def is_posture_ok(angle):
-    # Accept either sitting or standing range
     return (SITTING_MIN <= angle <= SITTING_MAX) or (STANDING_MIN <= angle <= STANDING_MAX)
 
-# ==================== MAIN LOOP ====================
 print("""
 Controls:
   q     - Quit
-  s     - Stop alarm (manual)
-  m     - Switch mode (Posture Monitor <-> Alarm Clock)
-  t     - Set timer (Alarm Clock mode only)
+  s     - Stop alarm
+  m     - Switch mode (Posture <-> Alarm Clock)
+  t     - Set timer
   c     - Cycle camera
 """)
 
@@ -117,45 +122,52 @@ while True:
 
     h, w = frame.shape[:2]
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    results = pose.process(rgb)
+    mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
+
+    detection_result = landmarker.detect(mp_image)
 
     spine_angle = None
     posture_status = "No person"
     color_status = (0, 0, 255)
 
-    if results.pose_landmarks:
-        lm = results.pose_landmarks.landmark
+    if detection_result.pose_landmarks:
+        landmarks = detection_result.pose_landmarks[0]
 
-        # ----- Draw body parts with colored labeled lines -----
-        # Head (nose → mid shoulder)
-        nose = get_landmark_point(lm, mp_pose.PoseLandmark.NOSE, w, h)
-        ls = get_landmark_point(lm, mp_pose.PoseLandmark.LEFT_SHOULDER, w, h)
-        rs = get_landmark_point(lm, mp_pose.PoseLandmark.RIGHT_SHOULDER, w, h)
+        # Head
+        nose = get_landmark_point(landmarks, 0, w, h)
+        ls = get_landmark_point(landmarks, 11, w, h)
+        rs = get_landmark_point(landmarks, 12, w, h)
         mid_s = ((ls[0] + rs[0]) // 2, (ls[1] + rs[1]) // 2)
         draw_labeled_line(frame, nose, mid_s, (255, 0, 255), "HEAD", 2)
 
         # Spine
-        spine_angle, mid_hip, mid_shoulder = calculate_spine_angle(lm, w, h)
+        spine_angle, mid_hip, mid_shoulder = calculate_spine_angle(landmarks, w, h)
         spine_color = (0, 255, 0) if is_posture_ok(spine_angle) else (0, 0, 255)
         draw_labeled_line(frame, mid_hip, mid_shoulder, spine_color, "SPINE", 4)
 
         # Arms
-        for side, color in [("LEFT", (255, 165, 0)), ("RIGHT", (0, 165, 255))]:
-            sh = get_landmark_point(lm, getattr(mp_pose.PoseLandmark, f"{side}_SHOULDER"), w, h)
-            el = get_landmark_point(lm, getattr(mp_pose.PoseLandmark, f"{side}_ELBOW"), w, h)
-            wr = get_landmark_point(lm, getattr(mp_pose.PoseLandmark, f"{side}_WRIST"), w, h)
+        for side, color, sh_idx, el_idx, wr_idx in [
+            ("LEFT", (255, 165, 0), 11, 13, 15),
+            ("RIGHT", (0, 165, 255), 12, 14, 16)
+        ]:
+            sh = get_landmark_point(landmarks, sh_idx, w, h)
+            el = get_landmark_point(landmarks, el_idx, w, h)
+            wr = get_landmark_point(landmarks, wr_idx, w, h)
             draw_labeled_line(frame, sh, el, color, f"{side[0]} ARM", 2)
             draw_labeled_line(frame, el, wr, color, "", 2)
 
         # Legs
-        for side, color in [("LEFT", (0, 255, 255)), ("RIGHT", (255, 255, 0))]:
-            hip = get_landmark_point(lm, getattr(mp_pose.PoseLandmark, f"{side}_HIP"), w, h)
-            knee = get_landmark_point(lm, getattr(mp_pose.PoseLandmark, f"{side}_KNEE"), w, h)
-            ank = get_landmark_point(lm, getattr(mp_pose.PoseLandmark, f"{side}_ANKLE"), w, h)
+        for side, color, hip_idx, knee_idx, ank_idx in [
+            ("LEFT", (0, 255, 255), 23, 25, 27),
+            ("RIGHT", (255, 255, 0), 24, 26, 28)
+        ]:
+            hip = get_landmark_point(landmarks, hip_idx, w, h)
+            knee = get_landmark_point(landmarks, knee_idx, w, h)
+            ank = get_landmark_point(landmarks, ank_idx, w, h)
             draw_labeled_line(frame, hip, knee, color, f"{side[0]} LEG", 2)
             draw_labeled_line(frame, knee, ank, color, "", 2)
 
-        # ----- Posture logic -----
+        # Posture logic
         if mode == "posture":
             if is_posture_ok(spine_angle):
                 posture_status = f"OK  ({spine_angle:.1f}°)"
@@ -173,7 +185,7 @@ while True:
                     is_alarming = True
                     play_alarm()
 
-    # ----- Alarm Clock mode -----
+    # Alarm Clock mode
     if mode == "alarm_clock":
         if timer_start_time is not None:
             remaining = max(0, timer_seconds - (time.time() - timer_start_time))
@@ -189,7 +201,7 @@ while True:
         else:
             posture_status = "Timer not set (press 't')"
 
-    # ----- On-screen UI -----
+    # UI
     cv2.rectangle(frame, (0, 0), (w, 90), (30, 30, 30), -1)
     cv2.putText(frame, f"Mode: {mode.upper()}", (10, 30),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
@@ -205,7 +217,6 @@ while True:
 
     cv2.imshow("Posture & Fall Monitor + Alarm Clock", frame)
 
-    # ----- Keyboard -----
     key = cv2.waitKey(1) & 0xFF
     if key == ord('q'):
         break
@@ -226,7 +237,6 @@ while True:
         except:
             print("Invalid input")
     elif key == ord('c'):
-        # Cycle cameras
         cap.release()
         CAMERA_INDEX = (CAMERA_INDEX + 1) % 4
         cap = cv2.VideoCapture(CAMERA_INDEX)
@@ -237,3 +247,4 @@ stop_alarm()
 cap.release()
 cv2.destroyAllWindows()
 pygame.mixer.quit()
+landmarker.close()
