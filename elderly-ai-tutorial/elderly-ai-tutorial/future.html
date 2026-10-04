@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Future Directions | ElderAI Tutorial</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">ElderAI Tutorial</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="problem.html">The Problem</a></li>
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="techniques.html">Techniques</a></li>
+        <li><a href="systems.html">Real Systems</a></li>
+        <li><a href="challenges.html">Challenges</a></li>
+        <li><a href="future.html" class="active">Future</a></li>
+        <li><a href="quiz.html">Quiz</a></li>
+        <li><a href="bibliography.html">Bibliography</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <div class="audio-box">
+        <strong>🔊 Page Narration</strong>
+        <audio controls>
+          <source src="audio/future.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <h1>Future Directions</h1>
+
+      <p>
+        The field is moving quickly. Several trends are likely to shape the next
+        generation of systems.
+      </p>
+
+      <h2>1. Predictive (Pre-Fall) Risk Scoring</h2>
+      <p>
+        Instead of only detecting a fall after it happens, newer work tries to
+        estimate fall <em>risk</em> continuously by monitoring gait speed, stride
+        variability, and posture changes over days or weeks. Early warnings can
+        trigger physical-therapy interventions before an injury occurs.
+      </p>
+
+      <h2>2. Multimodal Fusion</h2>
+      <p>
+        Combining cameras with radar, depth sensors, floor pressure mats, or
+        wearable IMUs improves robustness. Radar, for example, works in the dark
+        and through light clothing while still preserving privacy better than RGB.
+      </p>
+
+      <h2>3. On-Device Foundation Models</h2>
+      <p>
+        As smaller vision transformers and efficient pose models improve, it becomes
+        realistic to run higher-accuracy models entirely on a phone or a $50 edge
+        board without sending video to the cloud.
+      </p>
+
+      <h2>4. Better Real-World Datasets</h2>
+      <p>
+        The community still needs larger, more diverse datasets that contain actual
+        falls by older adults (with proper ethics approval and privacy protection).
+        Synthetic data and domain-adaptation techniques are also being explored to
+        reduce the gap between laboratory and home environments.
+      </p>
+
+      <h2>5. Integration with Broader Ambient Assisted Living</h2>
+      <p>
+        Fall detection is only one piece. Future homes will combine fall monitoring
+        with medication reminders, social robots, sleep analysis, and remote
+        clinician dashboards into a coherent “aging-in-place” platform.
+      </p>
+
+      <div class="callout info">
+        <strong>Bottom line:</strong> Technical feasibility has been demonstrated.
+        The remaining work is largely about reliability in messy real homes,
+        trustworthy privacy guarantees, and seamless integration into care workflows.
+      </div>
+
+      <p style="margin-top:2rem;">
+        <a href="quiz.html" class="btn">Next: Interactive Quiz →</a>
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    <p>AI & Computer Vision for Protecting the Elderly — Research Tutorial</p>
+  </footer>
+</body>
+</html>
