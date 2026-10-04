@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Quiz | ElderAI Tutorial</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">ElderAI Tutorial</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="problem.html">The Problem</a></li>
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="techniques.html">Techniques</a></li>
+        <li><a href="systems.html">Real Systems</a></li>
+        <li><a href="challenges.html">Challenges</a></li>
+        <li><a href="future.html">Future</a></li>
+        <li><a href="quiz.html" class="active">Quiz</a></li>
+        <li><a href="bibliography.html">Bibliography</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <div class="audio-box">
+        <strong>🔊 Page Narration</strong>
+        <audio controls>
+          <source src="audio/quiz.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <h1>Interactive Self-Check Quiz</h1>
+      <p>
+        Test your understanding. Select an answer for each question, then click
+        “Check Answers”. This quiz is for self-assessment only; nothing is recorded.
+      </p>
+
+      <form id="quizForm">
+        <div class="quiz-question">
+          <h3>1. Why do traditional wearable fall-alert buttons often fail?</h3>
+          <div class="quiz-options">
+            <label><input type="radio" name="q1" value="a"> They are too expensive</label>
+            <label><input type="radio" name="q1" value="b"> The person may be unconscious or unable to press the button after a fall</label>
+            <label><input type="radio" name="q1" value="c"> They only work outdoors</label>
+            <label><input type="radio" name="q1" value="d"> Batteries last only one day</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <h3>2. What is the main advantage of converting a person into a skeleton or silhouette before sending data?</h3>
+          <div class="quiz-options">
+            <label><input type="radio" name="q2" value="a"> It makes the video prettier</label>
+            <label><input type="radio" name="q2" value="b"> It reduces storage costs only</label>
+            <label><input type="radio" name="q2" value="c"> It protects privacy while still allowing fall analysis</label>
+            <label><input type="radio" name="q2" value="d"> It is required by law in every country</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <h3>3. In the simple spine-angle method, an upright standing posture is typically near which angle?</h3>
+          <div class="quiz-options">
+            <label><input type="radio" name="q3" value="a"> 0°</label>
+            <label><input type="radio" name="q3" value="b"> 45°</label>
+            <label><input type="radio" name="q3" value="c"> 90°</label>
+            <label><input type="radio" name="q3" value="d"> 180°</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <h3>4. The University of Alberta / Spxtrm AI system emphasized which design goal?</h3>
+          <div class="quiz-options">
+            <label><input type="radio" name="q4" value="a"> Maximum accuracy regardless of privacy</label>
+            <label><input type="radio" name="q4" value="b"> Privacy-preserving redacted video alerts</label>
+            <label><input type="radio" name="q4" value="c"> Cloud-only processing</label>
+            <label><input type="radio" name="q4" value="d"> Using only wearable sensors</label>
+          </div>
+        </div>
+
+        <div class="quiz-question">
+          <h3>5. Which of the following is still a major open challenge?</h3>
+          <div class="quiz-options">
+            <label><input type="radio" name="q5" value="a"> The basic idea of using cameras</label>
+            <label><input type="radio" name="q5" value="b"> Finding any deep-learning library</label>
+            <label><input type="radio" name="q5" value="c"> Robust performance on real falls by frail older adults in home environments</label>
+            <label><input type="radio" name="q5" value="d"> Drawing stick figures</label>
+          </div>
+        </div>
+
+        <button type="button" class="btn" onclick="checkQuiz()">Check Answers</button>
+      </form>
+
+      <div id="results" style="margin-top:1.5rem; display:none;"></div>
+
+      <p style="margin-top:2rem;">
+        <a href="bibliography.html" class="btn">Next: Annotated Bibliography →</a>
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    <p>AI & Computer Vision for Protecting the Elderly — Research Tutorial</p>
+  </footer>
+
+  <script>
+    function checkQuiz() {
+      const answers = {q1:'b', q2:'c', q3:'c', q4:'b', q5:'c'};
+      let score = 0;
+      let total = 5;
+      let html = '<h3>Results</h3><ul>';
+
+      for (let i = 1; i <= total; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const correct = answers[`q${i}`];
+        if (selected && selected.value === correct) {
+          score++;
+          html += `<li>Question ${i}: <span style="color:green">Correct</span></li>`;
+        } else {
+          html += `<li>Question ${i}: <span style="color:red">Incorrect</span> (correct answer is ${correct.toUpperCase()})</li>`;
+        }
+      }
+      html += `</ul><p><strong>Your score: ${score} / ${total}</strong></p>`;
+      if (score === total) {
+        html += '<p class="callout success">Excellent! You have a solid grasp of the material.</p>';
+      } else if (score >= 3) {
+        html += '<p class="callout info">Good effort. Review the pages for the questions you missed.</p>';
+      } else {
+        html += '<p class="callout warning">Consider re-reading the earlier pages and trying again.</p>';
+      }
+
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = html;
+      resultsDiv.style.display = 'block';
+    }
+  </script>
+</body>
+</html>

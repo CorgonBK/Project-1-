@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Techniques & Algorithms | ElderAI Tutorial</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">ElderAI Tutorial</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="problem.html">The Problem</a></li>
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="techniques.html" class="active">Techniques</a></li>
+        <li><a href="systems.html">Real Systems</a></li>
+        <li><a href="challenges.html">Challenges</a></li>
+        <li><a href="future.html">Future</a></li>
+        <li><a href="quiz.html">Quiz</a></li>
+        <li><a href="bibliography.html">Bibliography</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <div class="audio-box">
+        <strong>🔊 Page Narration</strong>
+        <audio controls>
+          <source src="audio/techniques.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <h1>Key Techniques & Algorithms</h1>
+
+      <p>
+        This page focuses on the concrete algorithms that make real-time fall detection
+        possible on ordinary cameras and edge hardware.
+      </p>
+
+      <h2>1. Pose Estimation Backbone</h2>
+      <p>
+        Most current systems start with a pose estimator. Two widely used options are:
+      </p>
+
+      <h3>MediaPipe Pose (BlazePose)</h3>
+      <p>
+        MediaPipe provides a lightweight model that outputs 33 body landmarks in real time
+        even on mobile CPUs. It is popular for prototypes and on-device applications because
+        it requires no GPU and has a small memory footprint.<sup><a href="bibliography.html#ref3">[3]</a></sup>
+      </p>
+
+      <h3>YOLO-based detectors + pose</h3>
+      <p>
+        YOLO (You Only Look Once) family models first detect the person, then a second
+        network or an integrated head predicts keypoints. Recent lightweight variants
+        (YOLOv8-pose, YOLOv10-n, Fast-YOLO-FD) are optimized for edge devices and can
+        reach high frame rates while keeping model size under a few megabytes.<sup><a href="bibliography.html#ref4">[4]</a></sup>
+      </p>
+
+      <div class="figure">
+        <img src="images/pose-landmarks.png" alt="Body pose landmarks"
+             onerror="this.style.display='none'">
+        <figcaption>
+          Figure 3. Typical body landmarks used for fall detection (shoulders, hips, knees, ankles).
+          The spine angle is usually computed from mid-shoulder to mid-hip.
+        </figcaption>
+      </div>
+
+      <h2>2. Spine Angle – A Simple but Powerful Feature</h2>
+      <p>
+        A surprisingly effective feature is the angle of the torso relative to the vertical.
+        When a person is standing or sitting upright the angle is near 90°. During a fall
+        the angle rapidly moves toward 0° (horizontal).
+      </p>
+
+      <div class="algo-box">
+<span class="comment"># Simplified spine-angle calculation (Python-style)</span><br>
+mid_shoulder = (left_shoulder + right_shoulder) / 2<br>
+mid_hip      = (left_hip + right_hip) / 2<br>
+<br>
+dx = mid_shoulder.x - mid_hip.x<br>
+dy = mid_shoulder.y - mid_hip.y   <span class="comment"># image y grows downward</span><br>
+<br>
+angle = degrees(atan2(dy, dx))<br>
+if angle &lt; 0: angle += 180<br>
+<br>
+<span class="comment"># upright ≈ 85–95° (standing) or 75–105° (sitting)</span><br>
+is_upright = 75 &lt;= angle &lt;= 105
+      </div>
+
+      <p>
+        In the accompanying practical project for this course, a threshold on this angle
+        (combined with a short “stillness” period) is used to trigger an alarm.
+      </p>
+
+      <h2>3. Temporal Models</h2>
+      <p>
+        Because a fall is a sequence, many research systems feed a short window of
+        joint coordinates or derived features into:
+      </p>
+      <ul>
+        <li><strong>LSTM / Bi-LSTM networks</strong> – classic choice for skeleton sequences</li>
+        <li><strong>1-D CNNs or temporal convolutional networks</strong></li>
+        <li><strong>Transformers</strong> – more recent and often higher accuracy</li>
+        <li><strong>Simple rule-based logic</strong> – still competitive when latency and
+            interpretability matter</li>
+      </ul>
+
+      <p>
+        A 2024–2025 trend is the combination of a lightweight pose estimator with an
+        optimized LSTM that can run entirely on a Raspberry Pi or Android box while
+        keeping false-alarm rates low.<sup><a href="bibliography.html#ref5">[5]</a></sup>
+      </p>
+
+      <h2>4. Privacy-Preserving Representations</h2>
+      <p>
+        Instead of sending raw video, systems commonly convert the person into:
+      </p>
+      <ul>
+        <li>A stick-figure skeleton</li>
+        <li>A silhouette or depth map</li>
+        <li>A low-resolution blurred blob</li>
+      </ul>
+      <p>
+        Only these abstracted representations (or a short redacted clip after a fall)
+        are transmitted. This design was emphasized in the University of Alberta /
+        Spxtrm AI system.<sup><a href="bibliography.html#ref2">[2]</a></sup>
+      </p>
+
+      <div class="callout info">
+        <strong>When to choose which approach?</strong><br>
+        • Need maximum speed & privacy on a phone or Pi → MediaPipe + simple angle rules<br>
+        • Need higher accuracy in complex scenes → YOLO-pose + temporal network<br>
+        • Multi-camera coverage of a whole house → lightweight edge nodes + central aggregator
+      </div>
+
+      <p style="margin-top:2rem;">
+        <a href="systems.html" class="btn">Next: Real Systems →</a>
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    <p>AI & Computer Vision for Protecting the Elderly — Research Tutorial</p>
+  </footer>
+</body>
+</html>

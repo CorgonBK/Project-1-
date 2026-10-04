@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real Systems | ElderAI Tutorial</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">ElderAI Tutorial</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="problem.html">The Problem</a></li>
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="techniques.html">Techniques</a></li>
+        <li><a href="systems.html" class="active">Real Systems</a></li>
+        <li><a href="challenges.html">Challenges</a></li>
+        <li><a href="future.html">Future</a></li>
+        <li><a href="quiz.html">Quiz</a></li>
+        <li><a href="bibliography.html">Bibliography</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <div class="audio-box">
+        <strong>🔊 Page Narration</strong>
+        <audio controls>
+          <source src="audio/systems.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <h1>Real Systems & Case Studies</h1>
+
+      <p>
+        Below are several concrete systems that illustrate how the ideas from the previous
+        pages have been turned into working prototypes or commercial products.
+      </p>
+
+      <h2>1. University of Alberta + Spxtrm AI (2018)</h2>
+      <p>
+        Researchers at the University of Alberta’s Multimedia Research Centre, led by
+        Professor Irene Cheng, collaborated with the company Spxtrm AI to build an
+        autonomous vision system for senior homes and private residences.<sup><a href="bibliography.html#ref2">[2]</a></sup>
+      </p>
+      <ul>
+        <li>Continuous high-resolution video is sent to a local “computer vision lockbox”.</li>
+        <li>Deep-learning motion classification detects falls and other critical events.</li>
+        <li>When a fall is detected, a caregiver receives an alert plus a <em>redacted</em>
+            video clip that hides the person’s appearance while still showing the moment
+            of impact and body position.</li>
+        <li>Privacy was treated as a first-class requirement.</li>
+      </ul>
+      <p>
+        This system is one of the earlier clear demonstrations that real-time,
+        privacy-aware fall detection is feasible with deep learning.
+      </p>
+
+      <h2>2. Edge-Device Skeleton + LSTM Systems</h2>
+      <p>
+        More recent academic work focuses on running the entire pipeline on low-cost
+        hardware (Raspberry Pi, Android TV boxes, ordinary smartphones). A typical
+        architecture is:
+      </p>
+      <ol>
+        <li>Pose estimation → skeleton sequence</li>
+        <li>Lightweight LSTM or temporal CNN</li>
+        <li>Local decision and alert (no cloud required for the critical path)</li>
+      </ol>
+      <p>
+        These designs survive network outages and keep all raw video inside the home.
+        Reported accuracies on public datasets often exceed 95 % while maintaining
+        low false-positive rates when a short “lying still” confirmation window is used.
+      </p>
+
+      <h2>3. Mobile / Smartphone-Centric Approaches</h2>
+      <p>
+        Several projects place the camera on a smartphone or tablet that the senior
+        already owns. Examples include:
+      </p>
+      <ul>
+        <li>YOLOv8-based detectors converted to TensorFlow Lite for on-device inference</li>
+        <li>MediaPipe Pose running at interactive frame rates on mid-range phones</li>
+        <li>Hybrid systems that combine the phone’s accelerometer with the camera
+            for higher reliability</li>
+      </ul>
+      <p>
+        The practical project that accompanies this tutorial follows exactly this
+        philosophy: a laptop or desktop webcam + MediaPipe / modern pose landmarker
+        + simple spine-angle logic + audible alarm.
+      </p>
+
+      <div class="figure">
+        <img src="images/system-comparison.png" alt="Comparison of system architectures"
+             onerror="this.style.display='none'">
+        <figcaption>
+          Figure 4. Conceptual comparison of three deployment styles:
+          cloud-centric, local lockbox, and fully on-device (phone / Pi).
+        </figcaption>
+      </div>
+
+      <h2>4. Commercial Senior-Living Installations</h2>
+      <p>
+        Some senior living communities have begun installing ambient sensors that
+        monitor gait and posture and can detect both falls and rising fall risk
+        (changes in stride length, slower walking speed). These systems usually
+        display only silhouettes or statistical summaries to staff, again prioritizing
+        privacy.<sup><a href="bibliography.html#ref6">[6]</a></sup>
+      </p>
+
+      <div class="callout success">
+        <strong>Common success factors:</strong>
+        local processing, privacy-preserving output, low false-alarm rate, and
+        simple caregiver notification.
+      </div>
+
+      <p style="margin-top:2rem;">
+        <a href="challenges.html" class="btn">Next: Challenges & Privacy →</a>
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    <p>AI & Computer Vision for Protecting the Elderly — Research Tutorial</p>
+  </footer>
+</body>
+</html>

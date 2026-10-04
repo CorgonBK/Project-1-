@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Problem | ElderAI Tutorial</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">ElderAI Tutorial</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="problem.html" class="active">The Problem</a></li>
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="techniques.html">Techniques</a></li>
+        <li><a href="systems.html">Real Systems</a></li>
+        <li><a href="challenges.html">Challenges</a></li>
+        <li><a href="future.html">Future</a></li>
+        <li><a href="quiz.html">Quiz</a></li>
+        <li><a href="bibliography.html">Bibliography</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <div class="audio-box">
+        <strong>🔊 Page Narration</strong>
+        <audio controls>
+          <source src="audio/problem.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <h1>The Problem: Why Falls Matter</h1>
+
+      <p>
+        According to public-health data, approximately one in four adults aged 65 and older
+        falls each year in the United States. Falls are the second leading cause of
+        unintentional injury deaths worldwide and generate tens of billions of dollars in
+        medical costs annually.<sup><a href="bibliography.html#ref1">[1]</a></sup>
+      </p>
+
+      <div class="figure">
+        <!-- Placeholder diagram: simple bar or icon illustration -->
+        <img src="images/fall-statistics.png" alt="Illustration of fall statistics among seniors"
+             onerror="this.style.display='none'">
+        <figcaption>
+          Figure 1. Falls are a major public-health issue for older adults.
+          (Conceptual illustration – replace with your own diagram or public-domain image.)
+        </figcaption>
+      </div>
+
+      <h2>Why Traditional Solutions Fall Short</h2>
+      <p>
+        Common solutions include wearable pendants with buttons, pull cords in bathrooms,
+        and medical-alert watches that use accelerometers. These approaches have important
+        limitations:
+      </p>
+      <ul>
+        <li><strong>User must act:</strong> After a serious fall a person may be unconscious
+            or unable to press a button.</li>
+        <li><strong>Compliance:</strong> Many seniors forget or refuse to wear devices.</li>
+        <li><strong>False alarms & battery life:</strong> Accelerometer systems can trigger
+            on normal activities or die when needed most.</li>
+        <li><strong>Limited context:</strong> Wearables rarely capture the full scene that
+            caregivers need for triage.</li>
+      </ul>
+
+      <div class="callout warning">
+        <strong>Key insight:</strong> The most dangerous situation is a fall that occurs when
+        a person is alone and cannot call for help. Response time is critical — delays of
+        even a few minutes increase the risk of serious complications.
+      </div>
+
+      <h2>The Opportunity for Computer Vision</h2>
+      <p>
+        Ambient (non-wearable) computer vision systems can continuously observe a living
+        space, detect a fall within seconds, and send an alert together with a short
+        privacy-protected video clip. Because the camera is fixed in the environment,
+        the senior does not need to remember to wear or charge anything.
+      </p>
+
+      <p>
+        Research groups and companies have therefore focused on deep-learning vision
+        pipelines that run either on edge devices or in a secure local “lockbox”
+        so that raw video never needs to leave the home.<sup><a href="bibliography.html#ref2">[2]</a></sup>
+      </p>
+
+      <h2>What This Tutorial Covers Next</h2>
+      <p>
+        The following pages explain the technical pipeline, the algorithms that make
+        real-time detection possible, concrete systems that have been built, and the
+        remaining open challenges.
+      </p>
+
+      <p style="margin-top:2rem;">
+        <a href="how-it-works.html" class="btn">Next: How It Works →</a>
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    <p>AI & Computer Vision for Protecting the Elderly — Research Tutorial</p>
+  </footer>
+</body>
+</html>

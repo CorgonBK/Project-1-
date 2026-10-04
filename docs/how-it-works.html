@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How It Works | ElderAI Tutorial</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">ElderAI Tutorial</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="problem.html">The Problem</a></li>
+        <li><a href="how-it-works.html" class="active">How It Works</a></li>
+        <li><a href="techniques.html">Techniques</a></li>
+        <li><a href="systems.html">Real Systems</a></li>
+        <li><a href="challenges.html">Challenges</a></li>
+        <li><a href="future.html">Future</a></li>
+        <li><a href="quiz.html">Quiz</a></li>
+        <li><a href="bibliography.html">Bibliography</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <div class="audio-box">
+        <strong>🔊 Page Narration</strong>
+        <audio controls>
+          <source src="audio/how-it-works.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <h1>How a Vision-Based Fall Detection System Works</h1>
+
+      <p>
+        Almost all modern computer-vision fall detection systems follow the same high-level
+        pipeline. Understanding this pipeline is the key to reading the research literature
+        and evaluating commercial products.
+      </p>
+
+      <div class="figure">
+        <img src="images/pipeline.png" alt="Fall detection pipeline diagram"
+             onerror="this.src=''; this.alt='[Pipeline diagram: Camera → Pose Estimation → Feature Extraction → Classifier → Alert]'">
+        <figcaption>
+          Figure 2. Typical real-time fall detection pipeline.
+          (Create a simple flowchart: Camera feed → Pose / Skeleton extraction → Temporal features → Fall / No-Fall classifier → Alert + redacted clip.)
+        </figcaption>
+      </div>
+
+      <h2>1. Video Capture</h2>
+      <p>
+        One or more cameras (RGB, sometimes depth or thermal) continuously stream video.
+        Frame rates of 15–30 fps are common. Many systems run the camera only when motion
+        is detected (event-triggered) to save power and bandwidth.
+      </p>
+
+      <h2>2. Person Detection & Pose Estimation</h2>
+      <p>
+        The system first locates any person in the frame and then estimates the positions
+        of key body joints (shoulders, hips, knees, ankles, etc.). Two popular families
+        of methods are:
+      </p>
+      <ul>
+        <li><strong>Top-down:</strong> Detect the person bounding box first, then estimate
+            pose inside the box (e.g., many YOLO + pose combinations).</li>
+        <li><strong>Bottom-up / direct:</strong> Predict all joints and group them into
+            skeletons (MediaPipe Pose, OpenPose-style approaches).</li>
+      </ul>
+      <p>
+        The output is usually a set of 2-D or 3-D coordinates for 17–33 landmarks per person.
+      </p>
+
+      <h2>3. Feature Extraction & Temporal Modeling</h2>
+      <p>
+        A single frame is rarely enough. Falls are defined by rapid changes over time:
+        a sudden drop of the center of mass, a change from vertical to horizontal torso,
+        high acceleration, and a period of low motion afterward (“lying still”).
+      </p>
+      <p>
+        Typical features include:
+      </p>
+      <ul>
+        <li>Spine / torso angle relative to vertical</li>
+        <li>Height of the hip or head above the floor</li>
+        <li>Velocity and acceleration of key joints</li>
+        <li>Aspect ratio of the bounding box</li>
+        <li>Sequences of these values fed into an LSTM, Transformer, or simple rules</li>
+      </ul>
+
+      <h2>4. Classification & Decision Logic</h2>
+      <p>
+        A classifier (or a set of rules) decides “Fall” versus “Activities of Daily Living”
+        (walking, sitting, bending, lying on a bed intentionally). Because false alarms
+        are costly, many systems require the person to remain on the floor for 2–3 seconds
+        before raising an alert.
+      </p>
+
+      <h2>5. Alert & Privacy-Preserving Output</h2>
+      <p>
+        When a fall is confirmed the system:
+      </p>
+      <ul>
+        <li>Sends a notification (SMS, push, phone call, or messaging bot) to caregivers</li>
+        <li>Often attaches a short video clip that has been redacted (silhouette, skeleton,
+            or blurred) so that personal appearance is not revealed<sup><a href="bibliography.html#ref2">[2]</a></sup></li>
+      </ul>
+
+      <div class="callout success">
+        <strong>Design principle:</strong> Keep as much processing as possible on a local
+        device (edge computing). Only the alert and a privacy-protected clip should leave
+        the home.
+      </div>
+
+      <p style="margin-top:2rem;">
+        <a href="techniques.html" class="btn">Next: Techniques & Algorithms →</a>
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    <p>AI & Computer Vision for Protecting the Elderly — Research Tutorial</p>
+  </footer>
+</body>
+</html>
