@@ -27,7 +27,7 @@ A complete GitHub Pages research tutorial on fall detection and safe aging-in-pl
 3. Go to **Settings → Pages**.
 4. Under “Source”, choose the branch (`main`) and folder (`/ (root)` or `/docs`).
 5. Save. After a minute your site will be live at:
-   `https://project-1-.github.io/REPO_NAME/`
+   `https://corgonbk.github.io/Project-1-/`
 
 ## Adding the audio narrations
 
