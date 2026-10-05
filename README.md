@@ -20,8 +20,8 @@ Mobile / Desktop Computer Vision system for real-time fall risk and posture moni
 ## Installation
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-cd YOUR_REPO_NAME
+git clone https://github.com/CorgonBK/Project-1-.git
+cd Project-1-
 python -m venv venv
 # Windows
 venv\Scripts\activate
