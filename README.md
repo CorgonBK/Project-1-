@@ -13,6 +13,9 @@ Mobile / Desktop Computer Vision system for real-time fall risk and posture moni
 - Alarm Clock mode with timer
 - Works on ordinary webcams / mobile cameras
 
+## Youtube Video
+https://youtu.be/IB7hSkayhRE
+
 ## Requirements
 - Python 3.8+
 - Webcam
